@@ -6,5 +6,5 @@ export enum MatchedFields {
 
 export interface ScreenResponse {
   status: "Hit" | "Clear";
-  matchFields?: Array<MatchedFields>;
+  matchedFields?: MatchedFields[];
 }

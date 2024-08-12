@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+
+import { getOFACBody, processResult } from "./utils";
 import type { CustomerFormData, OFACResponse } from "./types";
-import type { ScreenResponse } from "../../../types/shared";
 
 export async function POST(req: NextRequest) {
   const { fullName, birthDate, country } =
@@ -13,22 +14,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const body = {
-    minScore: 95,
-    types: ["person"],
-    sources: ["sdn"],
-    cases: [
-      {
-        name: fullName,
-        dob: birthDate,
-        type: "person",
-        address: {
-          country,
-        },
-      },
-    ],
-  };
-
   try {
     const res = await fetch("https://api.ofac-api.com/v4/screen", {
       method: "POST",
@@ -36,7 +21,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         apiKey: process.env.OFAC_API_KEY!,
       },
-      body: JSON.stringify(body),
+      body: getOFACBody(fullName, birthDate, country),
     });
 
     const data = (await res.json()) as OFACResponse;
@@ -49,23 +34,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-const processResult = (data: OFACResponse): ScreenResponse => {
-  if (data.error) {
-    throw new Error(data.errorMessage);
-  }
-
-  if (data.results?.[0]?.matches?.[0]?.matchSummary?.matchFields) {
-    const matchFields = data.results[0].matches[0].matchSummary.matchFields.map(
-      (matchField) => matchField.fieldName,
-    );
-    return {
-      status: "Hit",
-      matchFields,
-    };
-  }
-
-  return {
-    status: "Clear",
-  };
-};
