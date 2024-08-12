@@ -53,6 +53,7 @@ export function CustomerForm({
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setScreenResponse(null);
+    setApiError(false);
     setFormInput({ ...formInput, fullName: e.target.value });
     if (!validateTextInput(e.target.value)) {
       setFullNameValid(false);
@@ -63,6 +64,7 @@ export function CustomerForm({
 
   const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setScreenResponse(null);
+    setApiError(false);
     setFormInput({ ...formInput, birthDate: e.target.value });
     if (!validateBirthDate(e.target.value)) {
       setDobValid(false);
@@ -73,6 +75,7 @@ export function CustomerForm({
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setScreenResponse(null);
+    setApiError(false);
     setFormInput({ ...formInput, country: e.target.value });
     if (!validateTextInput(e.target.value)) {
       setCountryValid(false);
